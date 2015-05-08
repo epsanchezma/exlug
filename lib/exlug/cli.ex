@@ -3,7 +3,20 @@ defmodule Exlug.CLI do
   handle the command line parsing and the dispatch to the various functions that end up uploading a slug to Heroku.
   """
   def run(argv) do
-    parse_args(argv)
+    argv
+    |> parse_args
+    |> process
+  end
+
+  def process(:help) do
+    IO.puts """
+    usage: exlug <--app exampleapp> <--dir /path/to/src> [--release]
+    """
+    System.halt(0)
+  end
+
+  def process([app: app, dir: dir, release: release]) do
+    # Exlug.Slug.push(app, dir, release)
   end
 
   @doc """

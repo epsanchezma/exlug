@@ -10,6 +10,6 @@ defmodule ExlugTest.CliTest do
 
   test "app, dir and release returned by option parsing with --app, --dir and --release options" do
     assert parse_args(["--app", "myapp", "--dir", "/path/to/dir", "--release"]) == [app: "myapp", dir: "/path/to/dir", release: true]
-    #assert parse_args(["--app", "myapp", "--dir", "/path/to/dir"]) == [app: "myapp", dir: "/path/to/dir", release: false]
+    assert parse_args(["--app", "myapp", "--dir", "/path/to/dir"]) == [app: "myapp", dir: "/path/to/dir", release: false]
   end
 end

@@ -20,9 +20,9 @@ defmodule Exlug.CLI do
 
   def process([app: app_name, dir: source_dir, key: api_key, release: release]) do
     process_types = parse_procfile(source_dir)
-    slug = Slug.create(api_key, app_name, source_dir, process_types)
-    file_path = Slug.archive(slug)
-    Slug.push(file_path)
+    Slug.create(api_key, app_name, source_dir, process_types)
+    |> Slug.archive
+    |> Slug.push
     if release, do: Slug.release(slug)
   end
 

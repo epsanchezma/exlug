@@ -29,6 +29,7 @@ defmodule Exlug.Mixfile do
   defp deps do
     [{:httpoison, "~> 0.6"},
      {:yamerl, github: "yakaz/yamerl"},
-     {:netrc, "~> 0.0.1"}]
+     {:netrc, "~> 0.0.1"},
+     {:exjsx, "~> 3.1.0", app: false}]
   end
 end

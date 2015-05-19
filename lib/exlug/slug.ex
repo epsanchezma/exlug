@@ -1,29 +1,46 @@
 defmodule Exlug.Slug do
+  defstruct [:blob, :created_at, :id, :process_types, :updated_at, :slug_dir, :api_key, :app_name, :tar_file]
 
-#@user_agent [ {"User-agent", "Elixir dave@pragprog.com"} ] Not sure if needed
+  @moduledoc """
+  """
+  def create(api_key, app_name, source_dir, process_types) do
+    create_slug(app_name, api_key, process_types)
+    Map.merge(slug, %{slug_dir: source_dir, api_key: api_key, app_name: app_name})
+  end
 
-	def new_slug(app, dir, release) do 
-		
-	end
+  defp create_slug(app_name, api_key, process_types) do
+    url = resource_url(app_name, resource)
+    json = JSX.encode!(Map.put(%{}, "process_types", process_types))
+    slug = post(url, json, default_headers(api_key))
+    Map.merge(%Exlug.Slug{}, slug)
+  end
 
-	def heroku_url(app, resource) do
-	    "https://api.heroku.com/apps/#{app}/#{resource}"
-	    "https://api.heroku.com/apps/$APP_ID_OR_NAME/slugs"
-	end
+  def archive(slug) do
 
-	def handle_response(%{status_code: 200, body: body}) do
-	 { :ok, :body } 
-	end
+  end
 
-	def handle_response(%{status_code: ___, body: body}) do
-	 { :error, :body }
-	end
+  def push(slug) do
 
-	def heroku_req(app, method, resource, body) do
-		heroku_url(app, resource)
-		|> HTTPoison.get(@user_agent) #not sure if needed
-		|> handle_response
+  end
 
-	end
+  def release(slug) do
+  end
 
+
+  defp post(url, data, headers) do
+    response = HTTPoison.post!(url, data, headers)
+    JSX.decode!(response.body, [{:labels, :atom}])
+  end
+
+  defp default_headers(api_key) do
+    %{"Content-type" => "application/json", "Accept" => "application/vnd.heroku+json; version=3", "Authorization" => "Bearer #{api_key}"}
+  end
+
+  defp resource_url(app_name, resource) do
+    "https://api.heroku.com/apps/#{app_name}/#{resource}"
+  end
+
+  defp to_json(root, data) do
+    JSX.encode!(Map.put(%{}, root, data))
+  end
 end

@@ -1,4 +1,7 @@
 defmodule Exlug.CLI do
+  alias Exlug.Slug
+  alias Exlug.Procfile
+
   @moduledoc """
   handle the command line parsing and the dispatch to the various functions that end up uploading a slug to Heroku.
   """
@@ -15,9 +18,12 @@ defmodule Exlug.CLI do
     System.halt(0)
   end
 
-  def process([app: app, dir: dir, release: release], resource: resource) do
-    # Exlug.Slug.push(app, dir, release)
-      Exlug.Slug.new_slug(app,dir,release,resource)
+  def process([app: app_name, dir: source_dir, release: release]) do
+    process_types = parse_procfile(source_dir)
+    slug = Slug.create(api_key, app_name, source_dir, process_types)
+    file_path = Slug.archive(slug)
+    Slug.push(file_path)
+    if release, do: Slug.release(slug)
   end
 
   @doc """
@@ -26,14 +32,27 @@ defmodule Exlug.CLI do
   Return a keyword list of `[app: app, dir: dir, release: release]`, or `:help` if help was given.
   """
   def parse_args(argv) do
-    parse = OptionParser.parse(argv, switches: [ help: :boolean, dir: :string, app: :string, release: :boolean, resource :string ],
+    parse = OptionParser.parse(argv, switches: [ help: :boolean, dir: :string, app: :string, release: :boolean ],
                                       aliases: [ h:    :help    ])
 
     case parse do #not sure of the third line syntax
-      { [ help: true ], _, _ }                                             -> :help
-      { [app: app, dir: dir, release: release, resource: resource], _, _}  -> [app: app, dir: dir, release: release, resource: resource]
-      { [app: app, dir: dir], _, _, _, _}                                  -> [app: app, dir: dir, release: false, resource: resource]
-      _                                                                    -> :help
+      { [ help: true ], _, _ }                         -> :help
+      { [app: app, dir: dir, release: release], _, _}  -> [app: app, dir: dir, release: release]
+      { [app: app, dir: dir], _, _, }                  -> [app: app, dir: dir, release: false]
+      _                                                -> :help
     end
+  end
+
+  defp parse_procfile(dir) do
+    procfile_path = Path.join(dir, "Procfile")
+    File.read(procfile_path) do
+      {:ok, procfile} -> Procfile.parse(procfile)
+      {:error, _}     -> display_procfile_error
+    end
+  end
+
+  defp display_procfile_error do
+    IO.puts("It must exist a Procfile in the application folder")
+    System.halt(0)
   end
 end

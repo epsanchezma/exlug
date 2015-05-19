@@ -28,6 +28,7 @@ defmodule Exlug.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [{:httpoison, "~> 0.6"},
-     {:yamerl, github: "yakaz/yamerl"}]
+     {:yamerl, github: "yakaz/yamerl"},
+     {:netrc, "~> 0.0.1"}]
   end
 end

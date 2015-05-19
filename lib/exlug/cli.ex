@@ -18,7 +18,7 @@ defmodule Exlug.CLI do
     System.halt(0)
   end
 
-  def process([app: app_name, dir: source_dir, release: release]) do
+  def process([app: app_name, dir: source_dir, key: api_key, release: release]) do
     process_types = parse_procfile(source_dir)
     slug = Slug.create(api_key, app_name, source_dir, process_types)
     file_path = Slug.archive(slug)
@@ -32,20 +32,26 @@ defmodule Exlug.CLI do
   Return a keyword list of `[app: app, dir: dir, release: release]`, or `:help` if help was given.
   """
   def parse_args(argv) do
-    parse = OptionParser.parse(argv, switches: [ help: :boolean, dir: :string, app: :string, release: :boolean ],
+    parse = OptionParser.parse(argv, switches: [ help: :boolean, dir: :string, app: :string, release: :boolean, key: :string ],
                                       aliases: [ h:    :help    ])
 
     case parse do #not sure of the third line syntax
-      { [ help: true ], _, _ }                         -> :help
-      { [app: app, dir: dir, release: release], _, _}  -> [app: app, dir: dir, release: release]
-      { [app: app, dir: dir], _, _, }                  -> [app: app, dir: dir, release: false]
-      _                                                -> :help
+      { [ help: true ], _, _ }                                   -> :help
+      { [app: app, dir: dir, key: key], _, _}                    -> [app: app, dir: dir, key: key, release: false]
+      { [app: app, dir: dir, release: release], _, _}            -> [app: app, dir: dir, key: default_key, release: release]
+      { [app: app, dir: dir, key: key, release: release], _, _}  -> [app: app, dir: dir, key: key, release: release]
+      { [app: app, dir: dir], _, _, }                            -> [app: app, dir: dir, key: default_key, release: false]
+      _                                                          -> :help
     end
+  end
+
+  defp default_key do
+    Netrc.read["api.heroku.com"]["password"]
   end
 
   defp parse_procfile(dir) do
     procfile_path = Path.join(dir, "Procfile")
-    File.read(procfile_path) do
+    case File.read(procfile_path) do
       {:ok, procfile} -> Procfile.parse(procfile)
       {:error, _}     -> display_procfile_error
     end

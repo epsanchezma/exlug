@@ -15,8 +15,9 @@ defmodule Exlug.CLI do
     System.halt(0)
   end
 
-  def process([app: app, dir: dir, release: release]) do
+  def process([app: app, dir: dir, release: release], resource: resource) do
     # Exlug.Slug.push(app, dir, release)
+      Exlug.Slug.new_slug(app,dir,release,resource)
   end
 
   @doc """
@@ -25,14 +26,14 @@ defmodule Exlug.CLI do
   Return a keyword list of `[app: app, dir: dir, release: release]`, or `:help` if help was given.
   """
   def parse_args(argv) do
-    parse = OptionParser.parse(argv, switches: [ help: :boolean, dir: :string, app: :string, release: :boolean ],
+    parse = OptionParser.parse(argv, switches: [ help: :boolean, dir: :string, app: :string, release: :boolean, resource :string ],
                                       aliases: [ h:    :help    ])
 
-    case parse do
-      { [ help: true ], _, _ }                        -> :help
-      { [app: app, dir: dir, release: release], _, _} -> [app: app, dir: dir, release: release]
-      { [app: app, dir: dir], _, _}                   -> [app: app, dir: dir, release: false]
-      _                                               -> :help
+    case parse do #not sure of the third line syntax
+      { [ help: true ], _, _ }                                             -> :help
+      { [app: app, dir: dir, release: release, resource: resource], _, _}  -> [app: app, dir: dir, release: release, resource: resource]
+      { [app: app, dir: dir], _, _, _, _}                                  -> [app: app, dir: dir, release: false, resource: resource]
+      _                                                                    -> :help
     end
   end
 end

@@ -17,20 +17,37 @@ defmodule Exlug.Slug do
   end
 
   def archive(slug) do
-    slug
+    dir = Path.expand(slug.slug_dir)
+    file_list = File.ls!(dir)
+      |> Enum.reject(&(String.ends_with?(&1,".tar.gz")))
+      |> Enum.map(&({'app/#{&1}', '#{dir}/#{&1}'}))
+    tar_file = Path.join([System.tmp_dir, "slug-#{:erlang.phash2(:erlang.make_ref)}.tgz"])
+    :ok = :erl_tar.create(tar_file, file_list, [:compressed])
+    Map.merge(slug, %{tar_file: tar_file})
   end
 
   def push(slug) do
+    url = slug.blob.url
+    file_size = File.stat!(slug.tar_file).size
+    put(url, File.read!(slug.tar_file), %{"Content-Type" => ""})
     slug
   end
 
   def release(slug) do
-    slug
+    url = resource_url(slug.app_name, "releases")
+    json = encode_json(%{slug: slug.id})
+    response = post(url, json, Map.merge(default_headers, authorization_header(slug.api_key)))
+    release = decode_json(response.body)
+    release
   end
 
 
   defp post(url, data, headers) do
     HTTPoison.post!(url, data, headers)
+  end
+
+  defp put(url, data, headers) do
+    HTTPoison.put!(url, data, headers)
   end
 
   defp decode_json(body) do

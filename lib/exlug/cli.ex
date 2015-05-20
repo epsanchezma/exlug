@@ -23,7 +23,11 @@ defmodule Exlug.CLI do
     slug = Slug.create(api_key, app_name, source_dir, process_types)
     |> Slug.archive
     |> Slug.push
-    if release, do: Slug.release(slug)
+
+    if release do
+      release = Slug.release(slug)
+      IO.puts "#{release.app.name} v#{release.version} deployed by #{release.user.email}"
+    end
   end
 
   @doc """

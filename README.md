@@ -44,3 +44,11 @@ slug = Slug.create(api_key, app_name, source_dir, process_types)
 release = Slug.release(slug)
 IO.puts "done (v#{release.version})"
 ```
+
+## License
+
+exlug is copyright (c) 2015 Ride Group Inc and contributors.
+
+The source code is released under the MIT License.
+
+Check [LICENSE](LICENSE) for more information.

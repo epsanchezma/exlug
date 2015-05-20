@@ -9,6 +9,7 @@ CLI:
 ```term
 curl https://raw.githubusercontent.com/ride/exlug/master/exlug -o exlug
 chmod +x exlug
+./exlug
 ```
 
 Code:
@@ -26,7 +27,7 @@ Add exlug as a dependency to your project
 CLI:
 
 ```term
-$ exlug --dir /path/to/src --app sleepy-waters-6298 --release
+$ ./exlug --dir /path/to/src --app sleepy-waters-6298 --release
 Initializing slug for /path/to/src...done
 Archiving /path/to/src...done
 Pushing /var/folders/5m/m_zcl3016gdfpz4yy4zp33k80000gn/T/slug-83940020.tgz...done

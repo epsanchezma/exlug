@@ -30,6 +30,7 @@ defmodule Exlug.Mixfile do
     [{:httpoison, "~> 0.6"},
      {:yamerl, github: "yakaz/yamerl"},
      {:netrc, "~> 0.0.1"},
-     {:exjsx, "~> 3.1.0", app: false}]
+     {:exjsx, "~> 3.1.0", app: false},
+     {:mock, "~> 0.1.1", only: :test}]
   end
 end

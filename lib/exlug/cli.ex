@@ -19,14 +19,24 @@ defmodule Exlug.CLI do
   end
 
   def process([app: app_name, dir: source_dir, key: api_key, release: release]) do
-    process_types = parse_procfile(source_dir)
+    {:ok, process_types} = parse_procfile(source_dir)
+
+    IO.write "Initializing slug for #{source_dir}..."
     slug = Slug.create(api_key, app_name, source_dir, process_types)
-    |> Slug.archive
-    |> Slug.push
+    IO.write "done"
+
+    IO.write "Archiving #{source_dir}..."
+    slug = Slug.archive(slug)
+    IO.write "done"
+
+    IO.write "Pushing #{slug.tar_file}..."
+    Slug.push(slug)
+    IO.write "done"
 
     if release do
+      IO.write "Releasing..."
       release = Slug.release(slug)
-      IO.puts "#{release.app.name} v#{release.version} deployed by #{release.user.email}"
+      IO.write "done (v#{release.version})"
     end
   end
 

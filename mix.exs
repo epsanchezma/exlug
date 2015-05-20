@@ -36,7 +36,6 @@ defmodule Exlug.Mixfile do
   end
 
   defp escript_config do
-    [main_module: Exlug.CLI ]
+    [main_module: Exlug.CLI]
   end
-
 end

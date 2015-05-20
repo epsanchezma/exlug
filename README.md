@@ -4,6 +4,23 @@ Make slugs... with Elixir!!
 
 ## Install
 
+CLI:
+
+```term
+curl https://raw.githubusercontent.com/ride/exlug/master/exlug -o exlug
+chmod +x exlug
+```
+
+Code:
+
+Add exlug as a dependency to your project
+
+```elixir
+  defp deps do
+    [{:exlug, "~> 0.1.0"}]
+  end
+```
+
 ## Usage
 
 CLI:
@@ -16,7 +33,7 @@ Pushing /var/folders/5m/m_zcl3016gdfpz4yy4zp33k80000gn/T/slug-83940020.tgz...don
 Releasing...done (v18)
 ```
 
-In code:
+Code:
 
 ```elixir
 {:ok, process_types} = Procfile.parse(procfile_path)

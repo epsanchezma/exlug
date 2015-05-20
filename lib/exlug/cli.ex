@@ -5,7 +5,7 @@ defmodule Exlug.CLI do
   @moduledoc """
   handle the command line parsing and the dispatch to the various functions that end up uploading a slug to Heroku.
   """
-  def run(argv) do
+  def main(argv) do
     argv
     |> parse_args
     |> process

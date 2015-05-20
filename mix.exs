@@ -7,6 +7,7 @@ defmodule Exlug.Mixfile do
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     escript: escript_config,
      deps: deps]
   end
 
@@ -33,4 +34,9 @@ defmodule Exlug.Mixfile do
      {:exjsx, "~> 3.1.0", app: false},
      {:mock, "~> 0.1.1", only: :test}]
   end
+
+  defp escript_config do
+    [main_module: Exlug.CLI ]
+  end
+
 end

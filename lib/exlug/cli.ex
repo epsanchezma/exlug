@@ -13,14 +13,14 @@ defmodule Exlug.CLI do
 
   def process(:help) do
     IO.puts """
-    usage: exlug <--app exampleapp> <--dir /path/to/src> [--release]
+    usage: exlug --app example_app --dir /path/to/src [--key 123ABC] [--release]
     """
     System.halt(0)
   end
 
   def process([app: app_name, dir: source_dir, key: api_key, release: release]) do
     process_types = parse_procfile(source_dir)
-    Slug.create(api_key, app_name, source_dir, process_types)
+    slug = Slug.create(api_key, app_name, source_dir, process_types)
     |> Slug.archive
     |> Slug.push
     if release, do: Slug.release(slug)
@@ -38,15 +38,18 @@ defmodule Exlug.CLI do
     case parse do #not sure of the third line syntax
       { [ help: true ], _, _ }                                   -> :help
       { [app: app, dir: dir, key: key], _, _}                    -> [app: app, dir: dir, key: key, release: false]
-      { [app: app, dir: dir, release: release], _, _}            -> [app: app, dir: dir, key: default_key, release: release]
+      { [app: app, dir: dir, release: release], _, _}            -> [app: app, dir: dir, key: netrc_key, release: release]
       { [app: app, dir: dir, key: key, release: release], _, _}  -> [app: app, dir: dir, key: key, release: release]
-      { [app: app, dir: dir], _, _, }                            -> [app: app, dir: dir, key: default_key, release: false]
+      { [app: app, dir: dir], _, _, }                            -> [app: app, dir: dir, key: netrc_key, release: false]
       _                                                          -> :help
     end
   end
 
-  defp default_key do
-    Netrc.read["api.heroku.com"]["password"]
+  defp netrc_key do
+    case Netrc.read["api.heroku.com"] do
+      nil -> display_netrc_error
+      host -> Map.fetch!(host, "password")
+    end
   end
 
   defp parse_procfile(dir) do
@@ -58,7 +61,12 @@ defmodule Exlug.CLI do
   end
 
   defp display_procfile_error do
-    IO.puts("It must exist a Procfile in the application folder")
+    IO.puts "It must exist a Procfile in the application folder"
+    System.halt(0)
+  end
+
+  defp display_netrc_error do
+    IO.puts "Key wasn't specified with --key option and there is not a API key in user .netrc file"
     System.halt(0)
   end
 end

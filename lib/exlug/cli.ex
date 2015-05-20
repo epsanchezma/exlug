@@ -23,20 +23,20 @@ defmodule Exlug.CLI do
 
     IO.write "Initializing slug for #{source_dir}..."
     slug = Slug.create(api_key, app_name, source_dir, process_types)
-    IO.write "done"
+    IO.write "done\n"
 
     IO.write "Archiving #{source_dir}..."
     slug = Slug.archive(slug)
-    IO.write "done"
+    IO.write "done\n"
 
     IO.write "Pushing #{slug.tar_file}..."
     Slug.push(slug)
-    IO.write "done"
+    IO.write "done\n"
 
     if release do
       IO.write "Releasing..."
       release = Slug.release(slug)
-      IO.write "done (v#{release.version})"
+      IO.write "done (v#{release.version})\n"
     end
   end
 

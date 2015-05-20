@@ -8,7 +8,15 @@ defmodule Exlug.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      escript: escript_config,
+     description: description,
+     package: package,
      deps: deps]
+  end
+
+  defp description do
+    """
+    Create Heroku Slugs with Elixir.
+    """
   end
 
   # Configuration for the OTP application
@@ -37,5 +45,12 @@ defmodule Exlug.Mixfile do
 
   defp escript_config do
     [main_module: Exlug.CLI]
+  end
+
+  defp package do
+    [ files: ["lib", "mix.exs", "README.md", "LICENSE"],
+      contributors: ["Elba Sanchez", "Guillermo Iguaran"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/ride/exlug"} ]
   end
 end

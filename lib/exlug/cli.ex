@@ -19,7 +19,7 @@ defmodule Exlug.CLI do
   end
 
   def process([app: app_name, dir: source_dir, key: api_key, release: release]) do
-    process_types = parse_procfile(source_dir)
+    {:ok, process_types} = parse_procfile(source_dir)
 
     IO.write "Initializing slug for #{source_dir}..."
     slug = Slug.create(api_key, app_name, source_dir, process_types)

@@ -10,7 +10,6 @@ defmodule Exlug.Slug do
 
   defp create_slug(app_name, api_key, process_types) do
     url = resource_url(app_name, "slugs")
-    IO.inspect process_types
     json = encode_json(Map.put(%{}, "process_types", process_types))
     response = post(url, json, Map.merge(default_headers, authorization_header(api_key)))
     slug = decode_json(response.body)
